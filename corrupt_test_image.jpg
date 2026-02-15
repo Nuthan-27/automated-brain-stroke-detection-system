@@ -1,0 +1,1 @@
+This is not a real image. I am a text file disguised as a JPG to test the invalid file handling logic of the application. If you try to open me with PIL, I should fail.
