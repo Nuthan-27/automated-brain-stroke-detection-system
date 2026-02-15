@@ -138,6 +138,9 @@ def make_gradcam_heatmap(img_batch, model, last_conv_layer_name, class_index=Non
 
     with tf.GradientTape() as tape:
         conv_outputs, predictions = grad_model(img_batch, training=False)
+        if isinstance(predictions, list):
+            predictions = predictions[0]
+
         if predictions.shape[-1] == 1:
             loss = predictions[:, 0]
         else:
