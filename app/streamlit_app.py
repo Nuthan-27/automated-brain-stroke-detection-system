@@ -41,13 +41,21 @@ IMG_SIZE = 224
 # =========================================================
 # HELPER FUNCTIONS (TC_002, TC_004, TC_006)
 # =========================================================
+# Custom layer to handle 'groups' argument mismatch
+class FixedDepthwiseConv2D(tf.keras.layers.DepthwiseConv2D):
+    def __init__(self, **kwargs):
+        if 'groups' in kwargs:
+            kwargs.pop('groups')  # Remove 'groups' if present
+        super().__init__(**kwargs)
+
 @st.cache_resource
 def load_models():
     if not os.path.exists(RESNET_PATH) or not os.path.exists(EFFNET_PATH):
         return None, None
     try:
-        resnet_model = load_model(RESNET_PATH, compile=False)
-        eff_model = load_model(EFFNET_PATH, compile=False)
+        custom_objects = {'DepthwiseConv2D': FixedDepthwiseConv2D}
+        resnet_model = load_model(RESNET_PATH, compile=False, custom_objects=custom_objects)
+        eff_model = load_model(EFFNET_PATH, compile=False, custom_objects=custom_objects)
         return resnet_model, eff_model
     except Exception as e:
         st.error(f"Error loading models: {e}")
